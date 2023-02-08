@@ -6,7 +6,24 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from perpustakaan.resource import BukuResource
+from django.contrib.auth.models import User
 
+
+def home(request):
+    template = 'home.html'
+    return render(request, template)
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def users(request):
+    users = User.objects.all()
+    template = 'users.html'
+    context = {
+        'users':users,
+    }
+    return render(request, template, context)
+
+@login_required(login_url=settings.LOGIN_URL)
 def export_xls(request):
     buku = BukuResource()
     dataset = buku.export()
@@ -17,7 +34,7 @@ def export_xls(request):
 @login_required(login_url=settings.LOGIN_URL)
 def signup(request):
     if request.POST:
-        form =UserCreationForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, "User berhasil dibuat!")
@@ -29,14 +46,15 @@ def signup(request):
         form = UserCreationForm()
         konteks = {
             'form':form,
-
         }
     return render(request, 'signup.html', konteks)
+
 
 @login_required(login_url=settings.LOGIN_URL)
 def hapus_buku(request, id_buku):
     buku = Buku.objects.filter(id=id_buku)
     buku.delete()
+
     messages.success(request, "Data Berhasil dihapus!")
     return redirect('buku')
 
@@ -53,26 +71,20 @@ def ubah_buku(request, id_buku):
     else:
         form = FormBuku(instance=buku)
         konteks = {
-            'form': form,
-            'buku': buku,
+            'form':form,
+            'buku':buku,
         }
     return render(request, template, konteks)
 
 
 @login_required(login_url=settings.LOGIN_URL)
 def buku(request):
-    if request.POST:
-        kata_kunci = request.POST['cari']
-        books = Buku.objects.filter(judul__contains=kata_kunci)
-        context = {
-            'books': books,
-        }
-    else:
-        books = Buku.objects.all()
-        context = {
-            'books': books,
-        }
-    return render(request, 'buku.html', context)
+    books = Buku.objects.all()
+
+    konteks = {
+        'books': books,
+    }
+    return render(request, 'buku.html', konteks)
 
 @login_required(login_url=settings.LOGIN_URL)
 def penerbit(request):
@@ -86,6 +98,7 @@ def tambah_buku(request):
             form.save()
             form = FormBuku()
             pesan = "Data berhasil disimpan"
+
             konteks = {
                 'form': form,
                 'pesan': pesan,

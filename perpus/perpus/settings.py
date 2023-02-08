@@ -131,7 +131,7 @@ STATICFILES_DIRS = [
 
 LOGIN_REDIRECT_URL = 'home'
 
-LOGIN_URL = 'buku'
+LOGIN_URL = 'masuk'
 
 MEDIA_URL = '/media/'
 
