@@ -1,10 +1,16 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from perpustakaan.views import *
 from django.contrib.auth.views import LoginView, LogoutView
 from django.conf.urls.static import static
+from perpustakaan.viewset_api import *
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register('kelompok', KelompokViewset)
 
 urlpatterns = [
+    path('api/', include(router.urls)),
     path('', home, name='home'),
     path('admin/', admin.site.urls),
     path('penerbit/', penerbit, name='penerbit'),
